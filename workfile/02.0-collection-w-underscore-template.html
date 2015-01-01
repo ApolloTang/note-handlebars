@@ -15,6 +15,8 @@
 </head>
 <body>
 
+    <div id="region"></div>
+
     <script src="../vendors/jquery-1.11.0.js"></script>
     <script src="../vendors/underscore-1.6.0.js"></script>
     <script src="../vendors/backbone-1.1.2.js"></script>
@@ -24,30 +26,77 @@
     (function(){
         'use strict';
 
-        // Create an array whose elements are bb.model:
-        //        [   bb.model.extend( {"a":"5a", "b":"5b", "c":"5c", "d":"5d"} )
-        //          , bb.model.extend( {"a":"4a", "b":"4b", "c":"4c", "d":"4d"} ) ... ]
-        var   models = []
-            , i = 5;       // create 5 mock models
-        do {
-            var JSON = {};
-            _.each(['a', 'b', 'c', 'd'], function(item){ JSON[item] = i.toString() + item; });
-            // at this point JSON = { "a":"a"+i, "b":"b"+i, .... }
-            var modelInstance =  new ( Backbone.Model.extend() )( JSON );
-            models.push(modelInstance);
-        } while (--i);
+        var app = {};
 
-        // Add backbone modelInstance to collection.
-        var col = new ( Backbone.Collection.extend() )( models );
+        app.mock = function(num) {
+            // return an array whose elements are bb.model:
+            //        [   bb.model.extend( {"a":"5a", "b":"5b", "c":"5c", "d":"5d"} )
+            //          , bb.model.extend( {"a":"4a", "b":"4b", "c":"4c", "d":"4d"} ) ... ]
 
-        // Define the collection View
-        var colView = Backbone.View.extend({
-              tagName: 'table'
+            var   models = []
+                , i      = num      // number of model to create
+                , JSON   = null;    // { "a":"a"+i, "b":"b"+i, ... }
+
+            do {
+                JSON = {};
+                _.each(['a', 'b', 'c', 'd'], function(item){ JSON[item] = i.toString() + item; });
+                var modelInstance =  new ( Backbone.Model.extend() )( JSON );
+                models.push(modelInstance);
+            } while (--i);
+
+            return models;
+        };
+
+        app.templateItem
+            = '<% _.each(data, function(item) { %>'
+            + '<td><%= item %></td>'
+            + '<%  }); %>';
+        app.templateCollection
+            = '<thead><tr><th>AA</th><th>BB</th><th>CC</th><th>DD</th></tr></thead>'
+            + '<tbody></tbody>';
+
+        // Define item view
+        app.ViewItem = Backbone.View.extend({
+            tagName: 'tr'
+            , template: app.templateItem
             , render: function(){
-                //TODO
+                var data = this.model.toJSON();
+                var htmlToRender = _.template(this.template, {data:data} );
+                this.$el.html(htmlToRender);
+                return this;
             }
         });
 
+        // Define collection View
+        app.ViewCollection = Backbone.View.extend({
+              tagName: 'table'
+            , template: app.templateCollection
+            , render: function(){
+                var data = {};
+                var htmlToRender = _.template(this.template, {data: data} );
+                this.$el.html(htmlToRender);
+
+                var htmlRows = [];
+                this.collection.each(function(item){
+                    var viewItem = new app.ViewItem({model:item});
+                    var $itemHtml = viewItem.render().$el;
+                    htmlRows.push($itemHtml);
+                });
+                this.$el.find('tbody').html(htmlRows)
+                return this;
+            }
+        });
+
+        app.modelsData = app.mock(5);
+        // Instantiate a backbone collection with models data
+        app.collection = new ( Backbone.Collection.extend() )( app.modelsData );
+        // Create collection view instance
+        app.viewCollection = new app.ViewCollection({collection:app.collection});
+        app.table = app.viewCollection.render().$el
+
+        $('#region').append(app.table);
+
+        console.log(app.table);
     })();
 
     </script>
