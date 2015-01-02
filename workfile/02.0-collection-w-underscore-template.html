@@ -14,6 +14,15 @@
     </style>
 </head>
 <body>
+    <script id="template-item" type="text/x-underscore-template">
+        <% _.each(data, function(item) { %>
+            <td><%= item %></td>
+        <%  }); %>
+    </script>
+    <script id="template-collection" type="text/x-underscore-template">
+        <thead><tr><th>AA</th><th>BB</th><th>CC</th><th>DD</th></tr></thead>
+        <tbody></tbody>
+    </script>
 
     <div id="region"></div>
 
@@ -22,7 +31,7 @@
     <script src="../vendors/backbone-1.1.2.js"></script>
     <script src="../vendors/handlebars-v2.0.0.js"></script>
     <script>
-    /* global Backbone, _ */
+    /* global $, Backbone, _ */
     (function(){
         'use strict';
 
@@ -47,13 +56,8 @@
             return models;
         };
 
-        app.templateItem
-            = '<% _.each(data, function(item) { %>'
-            + '<td><%= item %></td>'
-            + '<%  }); %>';
-        app.templateCollection
-            = '<thead><tr><th>AA</th><th>BB</th><th>CC</th><th>DD</th></tr></thead>'
-            + '<tbody></tbody>';
+        app.templateItem = $('#template-item').html();
+        app.templateCollection = $('#template-collection').html();
 
         // Define item view
         app.ViewItem = Backbone.View.extend({
@@ -82,7 +86,7 @@
                     var $itemHtml = viewItem.render().$el;
                     htmlRows.push($itemHtml);
                 });
-                this.$el.find('tbody').html(htmlRows)
+                this.$el.find('tbody').html(htmlRows);
                 return this;
             }
         });
@@ -92,7 +96,7 @@
         app.collection = new ( Backbone.Collection.extend() )( app.modelsData );
         // Create collection view instance
         app.viewCollection = new app.ViewCollection({collection:app.collection});
-        app.table = app.viewCollection.render().$el
+        app.table = app.viewCollection.render().$el;
 
         $('#region').append(app.table);
 
