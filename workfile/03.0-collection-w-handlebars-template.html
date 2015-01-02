@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>02.00-collection-w-underscore-template</title>
+    <title>03.00-collection-w-handlebar-template</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
@@ -16,12 +16,12 @@
 <body>
 
     <script id="template-item" type="text/x-underscore-template">
-        <% _.each(data, function(item) { %>
-            <td><%= item %></td>
-        <%  }); %>
+        {{#each data}}
+            <td>{{this}}</td>
+        {{/each}}
     </script>
 
-    <script id="template-collection" type="text/x-underscore-template">
+    <script id="template-collection" type="text/x-handlebars-template">
         <thead><tr><th>AA</th><th>BB</th><th>CC</th><th>DD</th></tr></thead>
         <tbody></tbody>
     </script>
@@ -31,10 +31,10 @@
     <script src="../vendors/jquery-1.11.0.js"></script>
     <script src="../vendors/underscore-1.6.0.js"></script>
     <script src="../vendors/backbone-1.1.2.js"></script>
-
+    <script src="../vendors/handlebars-v2.0.0.js"></script>
 
     <script>
-    /* global $, Backbone, _ */
+    /* global $, Backbone, _, Handlebars */
     (function(){
         'use strict';
 
@@ -65,10 +65,10 @@
         // Define item view
         app.ViewItem = Backbone.View.extend({
             tagName: 'tr'
-            , template: _.template( app.templateItem )
+            , template: Handlebars.compile( app.templateItem )
             , render: function(){
                 var data = this.model.toJSON();
-                var htmlToRender = this.template({data:data});
+                var htmlToRender = this.template({data: data});
                 this.$el.html(htmlToRender);
                 return this;
             }
@@ -77,7 +77,7 @@
         // Define collection View
         app.ViewCollection = Backbone.View.extend({
               tagName: 'table'
-            , template: _.template( app.templateCollection )
+            , template: Handlebars.compile( app.templateCollection )
             , render: function(){
                 var htmlToRender = this.template();
                 this.$el.html(htmlToRender);
