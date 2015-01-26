@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>04.02-helper</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
+        <style media="screen" type="text/css">
+
+        /* css here */
+
+        </style>
+    </head>
+    <body>
+
+        <script id="my-template" type="text/x-handlebars-template">
+            <ul>
+                {{#each items}}
+                    <li>{{agree_button}}</li>
+                {{/each}}
+            </ul>
+        </script>
+
+        <script src="../vendors/jquery-1.11.0.js"></script>
+        <script src="../vendors/handlebars-v2.0.0.js"></script>
+        <script>
+
+            // define context
+            var context = {
+                items: [
+                    {name: "Handlebars", emotion: "love"},
+                    {name: "Mustache", emotion: "enjoy"},
+                    {name: "Ember", emotion: "want to learn"}
+                  ]
+            };
+
+            var templateSource   = $("#my-template").html();
+
+            Handlebars.registerHelper('agree_button', function() {
+                console.log('arguments: ', arguments);  // <-- no data is passed
+                console.log('this: ', this);            // <-- "this" is current context of block
+                var ret =  "I agree. I " + this.emotion + " " + this.name
+                return ret;
+            });
+
+            var template = Handlebars.compile(templateSource);
+
+            var resultFromHelper = template(context);
+            $('body').append(resultFromHelper);
+
+        </script>
+    </body>
+</html>
