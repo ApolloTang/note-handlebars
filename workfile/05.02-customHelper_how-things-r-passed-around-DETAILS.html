@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>01.20-custum-helper</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
+        <style media="screen" type="text/css">
+
+        /* css here */
+
+        </style>
+    </head>
+    <body>
+
+        <script id="my-template" type="text/x-handlebars-template">
+            {{! The items after #myHelper is passed to Handlebars.registerHelpers callback }}
+            {{#myHelper this myAttribute_1 myAttribute_2 'someText'}}
+                a: {{a}} </br>         {{! a: [object Object]          }}
+                b: {{b}} </br>         {{! b: value in myAttribute_1   }}
+                c: {{c}} </br>         {{! c: value in myAttribute_2   }}
+                d: {{d}} </br>         {{! d: someText                 }}
+                this: {{this}} <br>
+            {{/myHelper}}
+        </script>
+
+        <script src="../vendors/jquery-1.11.0.js"></script>
+        <script src="../vendors/handlebars-v2.0.0.js"></script>
+        <script>
+
+            var myContext = {
+                myAttribute_1:'value in myAttribute_1',
+                myAttribute_2:'value in myAttribute_2'
+            };
+
+            var templateSource   = $("#my-template").html();
+
+            Handlebars.registerHelper('myHelper', function() {
+
+                    console.log('arguments: ', arguments);
+                        // arguments:
+                        //      0: Object  === this === myContext
+                        //      1: "value in myAttribute_1"
+                        //      2: "value in myAttribute_2"
+                        //      3: "someText"
+                        //      4: Object
+                    console.log('arguments.length: ', arguments.length);
+                        // arguments.length = 5
+
+                    var templateFn = arguments[arguments.length-1].fn
+                    var resultFromHelper
+                        = '--- resultFromHelper [ start ] --- </br>'
+                        + templateFn({
+                            a:arguments[0], // [object Object] === this === myContext
+                            b:arguments[1], // 'value in myAttributes_1'
+                            c:arguments[2], // 'value in myAttributes_1'
+                            d:arguments[3]  // 'someText'
+                          }) + '</br>'
+                        + '--- resultFromHelper [ end ] --- </br>'
+
+                    console.log('this === myContext: ', (this === myContext));
+                    console.log('this === arguments[0]: ', (this === arguments[0]));
+                return resultFromHelper;
+            });
+
+            var template = Handlebars.compile(templateSource);
+            var resultFromHelper = template(myContext);
+            $('body').append(resultFromHelper);
+
+        </script>
+    </body>
+</html>
