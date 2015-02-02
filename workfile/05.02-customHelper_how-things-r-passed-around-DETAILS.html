@@ -16,13 +16,18 @@
     <body>
 
         <script id="my-template" type="text/x-handlebars-template">
-            {{! The items after #myHelper is passed to Handlebars.registerHelpers callback }}
-            {{#myHelper this myAttribute_1 myAttribute_2 'someText'}}
-                a: {{a}} </br>         {{! a: [object Object]          }}
-                b: {{b}} </br>         {{! b: value in myAttribute_1   }}
-                c: {{c}} </br>         {{! c: value in myAttribute_2   }}
-                d: {{d}} </br>         {{! d: someText                 }}
-                this: {{this}} <br>
+            {{! The items after #myHelper will be the formal parameters of Handlebars.registerHelpers callback }}
+            {{#myHelper 123 this this.x1 'someText'}}
+
+                a: {{a}} </br>            {{! 'what ever 1'   }}
+                b: {{b}} </br>            {{! 'what ever 2'   }}
+                c.d: {{c.d}} </br>
+                this: {{this}} <br>       {{! 'object Object' }}
+                <hr>
+                this.x2: {{this.x2}} <br> {{! will not work   }}
+                x3.y: {{x3.y}} <br>       {{! will not work   }}
+                x2: {{x2}} <br>           {{! will not work   }}
+
             {{/myHelper}}
         </script>
 
@@ -31,8 +36,11 @@
         <script>
 
             var myContext = {
-                myAttribute_1:'value in myAttribute_1',
-                myAttribute_2:'value in myAttribute_2'
+                x1:'x1',
+                x2:'x2',
+                x3:{
+                    y:'y'
+                }
             };
 
             var templateSource   = $("#my-template").html();
@@ -41,27 +49,32 @@
 
                     console.log('arguments: ', arguments);
                         // arguments:
-                        //      0: Object  === this === myContext
-                        //      1: "value in myAttribute_1"
-                        //      2: "value in myAttribute_2"
+                        //      0: 123
+                        //      1: Object === context
+                        //      2: 'x1'
                         //      3: "someText"
-                        //      4: Object
+                        //      4: {
+                        //           data: {root: context}
+                        //           fn: function() {.... }
+                        //         }
                     console.log('arguments.length: ', arguments.length);
                         // arguments.length = 5
 
+                    // template function can be found in last item
                     var templateFn = arguments[arguments.length-1].fn
+
                     var resultFromHelper
                         = '--- resultFromHelper [ start ] --- </br>'
                         + templateFn({
-                            a:arguments[0], // [object Object] === this === myContext
-                            b:arguments[1], // 'value in myAttributes_1'
-                            c:arguments[2], // 'value in myAttributes_1'
-                            d:arguments[3]  // 'someText'
-                          }) + '</br>'
+                            // what ever you return in this obj literal will be
+                            // available in the "{{}}" inside template
+                            a:'what ever 1',
+                            b:'what ever 2',
+                            c:{d:'d'}
+                        }) + '</br>'
                         + '--- resultFromHelper [ end ] --- </br>'
 
-                    console.log('this === myContext: ', (this === myContext));
-                    console.log('this === arguments[0]: ', (this === arguments[0]));
+                    console.log('this === myContext: ', (this === myContext)); // true
                 return resultFromHelper;
             });
 
