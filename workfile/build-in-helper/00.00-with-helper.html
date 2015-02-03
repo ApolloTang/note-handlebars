@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>01.20-custum-helper</title>
+        <title>01.01-with</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
@@ -16,29 +16,29 @@
     <body>
 
         <script id="my-template" type="text/x-handlebars-template">
-            <div class="entry">
-              <div class="body">
-                <h1>{{title}}</h1>
-                {{#noop this}}{{body}}{{/noop}}
-              </div>
-            </div>
+            <div>{{lv1.lv2.lv3.a}}<div>
+            <hr>
+            <div>{{#with lv1.lv2.lv3}}<div>
+                <div>{{a}}<div>
+            <div>{{/with}}<div>
         </script>
 
-        <script src="../vendors/jquery-1.11.0.js"></script>
-        <script src="../vendors/handlebars-v2.0.0.js"></script>
+        <script src="http://localhost:8001/js/lib/jquery-1.11.0.js"></script>
+        <script src="http://localhost:8001/js/lib/handlebars-v2.0.0.js"></script>
         <script>
 
             var myContext = {
-                body:'body',
-                title:'title'
+                lv1:{
+                    lv2:{
+                        lv3:{
+                            a:'a',
+                            b:'b'
+                        }
+                    }
+                }
             };
 
             var templateSource   = $("#my-template").html();
-
-            Handlebars.registerHelper('noop', function(options) {
-                console.log(options);
-                console.log(arguments[1])
-            });
 
             var template = Handlebars.compile(templateSource);
             var resultFromHelper = template(myContext);
