@@ -32,11 +32,11 @@
                 ]
             };
 
-            Handlebars.registerHelper('myIterator', function(context, options){
+            Handlebars.registerHelper('myIterator', function(collection, options){
                 var ret = "<ul>";
 
-                for (var key in context){
-                    ret = ret + options.fn(context[key]);
+                for (var key in collection){
+                    ret = ret + options.fn(collection[key]);
                 }
 
                 return ret  + "</ul>";
