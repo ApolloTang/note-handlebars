@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>iterator</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://localhost:8001/css/lib/normalize-2.1.2.css">
+        <style media="screen" type="text/css">
+
+        /* css here */
+
+        </style>
+    </head>
+    <body>
+
+        <script id="my-template" type="text/x-handlebars-template">
+            {{#L_1 coll}}
+                    <ul>
+                        {{#L_2 this }}
+                            <li>{{this}}</li>
+                        {{/L_2}}
+                    </ul>
+            {{/L_1}}
+        </script>
+
+        <script src="http://localhost:8001/js/lib/jquery-1.11.0.js"></script>
+        <script src="http://localhost:8001/js/lib/handlebars-v2.0.0.js"></script>
+        <script>
+
+            var myContext = {
+                coll: [
+                    ["1a", "1b", "1c"],
+                    ["2a", "2b", "2c"],
+                    ["3a", "3b", "3c"]
+                ]
+            };
+
+            Handlebars.registerHelper('L_1', function(coll, options){
+                var ret = "";
+
+                for (var i=0, j=coll.length; i<j; i++){
+                    ret = ret + options.fn(coll[i]);
+                    console.log(ret);
+                }
+                return ret;
+            })
+
+            Handlebars.registerHelper('L_2', function(array, options){
+                var ret = "";
+
+                for (var i=0, j=array.length; i<j; i++){
+                    ret = ret + options.fn(array[i]);
+                    console.log(ret);
+                }
+                return ret;
+            })
+            var templateSource   = $("#my-template").html();
+
+            var template = Handlebars.compile(templateSource);
+            var resultFromHelper = template(myContext);
+            $('body').append(resultFromHelper);
+
+        </script>
+    </body>
+</html>
